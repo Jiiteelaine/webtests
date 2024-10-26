@@ -128,8 +128,8 @@
             timer.interval = setInterval(() => {
                 if (timeRemaining <= 0) {
                     clearInterval(timer.interval);
-                    countdownElement.textContent = "Restarting...";
-                    setTimeout(() => resetTimer(timerId, timer.initialTime), 1000);
+                    countdownElement.textContent = "--:--";
+                    setTimeout(() => resetTimer(timerId, timer.initialTime), 1);
                     return;
                 }
 
