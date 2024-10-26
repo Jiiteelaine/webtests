@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>28-Minute Countdown</title>
+    <title>Sansour Timers</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,29 +11,30 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f0f0f0;
+            background-color: #36454F;
             margin: 0;
             flex-direction: column;
         }
-        #timer-container {
+        .timer-container {
             display: flex;
             align-items: center;
             margin-bottom: 20px;
         }
-        #timer {
-            font-size: 48px;
-            color: #333;
+        .timer {
+            font-size: 36px;
+            color: #ffffff;
             margin-right: 20px;
         }
-        #label {
-            font-size: 24px;
-            color: #555;
+        .label {
+            font-size: 18px;
+            color: #ffffff;
+            margin-right: 20px;
         }
         button {
-            padding: 10px 20px;
+            padding: 10px 10px;
             font-size: 16px;
             cursor: pointer;
-            background-color: #007BFF;
+            background-color: #B2BEB5;
             color: white;
             border: none;
             border-radius: 5px;
@@ -45,44 +46,110 @@
 </head>
 <body>
 
-    <div id="timer-container">
-        <div id="timer">28:00</div>
-        <div id="label">In Vitro</div>
+    <!-- Timer for Vitro (28 minutes) -->
+    <div class="timer-container">
+        <div class="label">In Vitro</div>
+        <div id="timer-vitro" class="timer">28:00</div>
+        <button onclick="resetTimer('vitro', 1680)">Reset</button>
     </div>
-    <button onclick="resetTimer()">Reset Timer</button>
+
+    <!-- Timer for Opera (21 minutes) -->
+    <div class="timer-container">
+        <div class="label">Opera</div>
+        <div id="timer-opera" class="timer">21:00</div>
+        <button onclick="resetTimer('opera', 1260)">Reset</button>
+    </div>
+
+    <!-- Timer for Future (28 minutes) -->
+    <div class="timer-container">
+        <div class="label">Future</div>
+        <div id="timer-future" class="timer">28:00</div>
+        <button onclick="resetTimer('future', 1680)">Reset</button>
+    </div>
+
+    <!-- Timer for Estate (9 minutes) -->
+    <div class="timer-container">
+        <div class="label">Estate</div>
+        <div id="timer-estate" class="timer">09:00</div>
+        <button onclick="resetTimer('estate', 540)">Reset</button>
+    </div>
+
+    <!-- Timer for Space (5 minutes) -->
+    <div class="timer-container">
+        <div class="label">Space</div>
+        <div id="timer-space" class="timer">05:00</div>
+        <button onclick="resetTimer('space', 300)">Reset</button>
+    </div>
 
     <script>
-        // Set initial time for the countdown (28 minutes = 1680 seconds)
-        var initialTime = 1680;
-        var timeRemaining = initialTime;
-        var countdownInterval;
+        // Variables to track intervals for each timer
+        var countdownIntervals = {};
 
-        function startCountdown() {
-            var countdownElement = document.getElementById('timer');
+        // Function to start a countdown
+        function startCountdown(timerId, initialTime, elapsedTime) {
+            var countdownElement = document.getElementById('timer-' + timerId);
 
-            // Clear any existing interval to avoid multiple timers running
-            clearInterval(countdownInterval);
+            // Calculate the remaining time based on the stored elapsed time
+            var currentTime = Date.now();
+            var timeRemaining = initialTime - Math.floor((currentTime - elapsedTime) / 1000);
+
+            // Clear any existing interval for this timer
+            clearInterval(countdownIntervals[timerId]);
 
             // Update the countdown every second
-            countdownInterval = setInterval(function() {
+            countdownIntervals[timerId] = setInterval(function() {
+                if (timeRemaining <= 0) {
+                    clearInterval(countdownIntervals[timerId]);
+                    countdownElement.textContent = "--:--";
+                    // Automatically restart the timer
+                    setTimeout(function() {
+                        resetTimer(timerId, initialTime);
+                    }, 1);
+                    return;
+                }
+
                 var minutes = Math.floor(timeRemaining / 60);
                 var seconds = timeRemaining % 60;
 
-                // Format minutes and seconds as two digits
                 minutes = minutes < 10 ? '0' + minutes : minutes;
                 seconds = seconds < 10 ? '0' + seconds : seconds;
 
                 countdownElement.textContent = minutes + ":" + seconds;
 
-                // Decrease time remaining
                 timeRemaining--;
-
-                // Stop the countdown when time runs out
-                if (timeRemaining < 0) {
-                    clearInterval(countdownInterval);
-                    countdownElement.textContent = "Time's up!";
-                }
             }, 1000);
         }
 
-        // Reset the timer to the initial
+        // Function to reset the timer
+        function resetTimer(timerId, initialTime) {
+            clearInterval(countdownIntervals[timerId]); // Stop the current countdown
+            var currentTime = Date.now(); // Capture the current time
+            localStorage.setItem('timer-' + timerId, currentTime); // Store the start time in localStorage
+            startCountdown(timerId, initialTime, currentTime); // Restart the countdown
+        }
+
+        // Load timers from localStorage and start them on page load
+        window.onload = function() {
+            var timers = [
+                { id: 'vitro', initialTime: 1680 },
+                { id: 'opera', initialTime: 1260 },
+                { id: 'future', initialTime: 1680 },
+                { id: 'estate', initialTime: 540 },
+                { id: 'space', initialTime: 300 }
+            ];
+
+            timers.forEach(function(timer) {
+                var storedTime = localStorage.getItem('timer-' + timer.id);
+                if (storedTime) {
+                    // If there's a stored time, calculate the elapsed time and continue the countdown
+                    startCountdown(timer.id, timer.initialTime, storedTime);
+                } else {
+                    // Otherwise, start the countdown fresh
+                    resetTimer(timer.id, timer.initialTime);
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
