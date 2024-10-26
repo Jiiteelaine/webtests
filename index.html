@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>28-Minute Countdown</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+            flex-direction: column;
+        }
+        #timer-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        #timer {
+            font-size: 48px;
+            color: #333;
+            margin-right: 20px;
+        }
+        #label {
+            font-size: 24px;
+            color: #555;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="timer-container">
+        <div id="timer">28:00</div>
+        <div id="label">In Vitro</div>
+    </div>
+    <button onclick="resetTimer()">Reset Timer</button>
+
+    <script>
+        // Set initial time for the countdown (28 minutes = 1680 seconds)
+        var initialTime = 1680;
+        var timeRemaining = initialTime;
+        var countdownInterval;
+
+        function startCountdown() {
+            var countdownElement = document.getElementById('timer');
+
+            // Clear any existing interval to avoid multiple timers running
+            clearInterval(countdownInterval);
+
+            // Update the countdown every second
+            countdownInterval = setInterval(function() {
+                var minutes = Math.floor(timeRemaining / 60);
+                var seconds = timeRemaining % 60;
+
+                // Format minutes and seconds as two digits
+                minutes = minutes < 10 ? '0' + minutes : minutes;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+
+                countdownElement.textContent = minutes + ":" + seconds;
+
+                // Decrease time remaining
+                timeRemaining--;
+
+                // Stop the countdown when time runs out
+                if (timeRemaining < 0) {
+                    clearInterval(countdownInterval);
+                    countdownElement.textContent = "Time's up!";
+                }
+            }, 1000);
+        }
+
+        // Reset the timer to the initial
