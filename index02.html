@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server-Stored Timers</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+            flex-direction: column;
+        }
+        .timer-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .timer {
+            font-size: 48px;
+            color: #333;
+            margin-right: 20px;
+        }
+        .label {
+            font-size: 24px;
+            color: #555;
+            margin-right: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Timer for Vitro (28 minutes) -->
+    <div class="timer-container">
+        <div class="label">Vitro</div>
+        <div id="timer-vitro" class="timer">28:00</div>
+        <button onclick="resetTimer('vitro', 1680)">Reset Timer</button>
+    </div>
+
+    <!-- Timer for Opera (21 minutes) -->
+    <div class="timer-container">
+        <div class="label">Opera</div>
+        <div id="timer-opera" class="timer">21:00</div>
+        <button onclick="resetTimer('opera', 1260)">Reset Timer</button>
+    </div>
+
+    <!-- Timer for Future (28 minutes) -->
+    <div class="timer-container">
+        <div class="label">Future</div>
+        <div id="timer-future" class="timer">28:00</div>
+        <button onclick="resetTimer('future', 1680)">Reset Timer</button>
+    </div>
+
+    <!-- Timer for Estate (9 minutes) -->
+    <div class="timer-container">
+        <div class="label">Estate</div>
+        <div id="timer-estate" class="timer">09:00</div>
+        <button onclick="resetTimer('estate', 540)">Reset Timer</button>
+    </div>
+
+    <!-- Timer for Space (5 minutes) -->
+    <div class="timer-container">
+        <div class="label">Space</div>
+        <div id="timer-space" class="timer">05:00</div>
+        <button onclick="resetTimer('space', 300)">Reset Timer</button>
+    </div>
+
+    <script>
+        const timers = {
+            vitro: { initialTime: 1680, elementId: 'timer-vitro' },
+            opera: { initialTime: 1260, elementId: 'timer-opera' },
+            future: { initialTime: 1680, elementId: 'timer-future' },
+            estate: { initialTime: 540, elementId: 'timer-estate' },
+            space: { initialTime: 300, elementId: 'timer-space' }
+        };
+
+        async function loadTimers() {
+            try {
+                const response = await fetch('http://localhost:3000/api/timer/state');
+                const data = await response.json();
+
+                data.forEach(timerData => {
+                    const timer = timers[timerData.id];
+                    if (timer) {
+                        const timeElapsed = Math.floor((Date.now() - timerData.startTime) / 1000);
+                        startCountdown(timerData.id, timerData.duration - timeElapsed);
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading timers:', error);
+            }
+        }
+
+        async function saveTimerState(timerId, initialTime) {
+            try {
+                const startTime = Date.now();
+                await fetch('http://localhost:3000/api/timer/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: timerId, startTime, duration: initialTime })
+                });
+            } catch (error) {
+                console.error('Error saving timer:', error);
+            }
+        }
+
+        function startCountdown(timerId, timeRemaining) {
+            const timer = timers[timerId];
+            const countdownElement = document.getElementById(timer.elementId);
+
+            clearInterval(timer.interval);
+            timer.interval = setInterval(() => {
+                if (timeRemaining <= 0) {
+                    clearInterval(timer.interval);
+                    countdownElement.textContent = "Restarting...";
+                    setTimeout(() => resetTimer(timerId, timer.initialTime), 1000);
+                    return;
+                }
+
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                countdownElement.textContent = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+                timeRemaining--;
+            }, 1000);
+        }
+
+        function resetTimer(timerId, initialTime) {
+            clearInterval(timers[timerId].interval);
+            saveTimerState(timerId, initialTime);
+            startCountdown(timerId, initialTime);
+        }
+
+        // Initialize timers on page load
+        window.onload = loadTimers;
+    </script>
+
+</body>
+</html>
