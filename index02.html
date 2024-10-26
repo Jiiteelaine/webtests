@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Server-Stored Timers</title>
+    <title>Sansour Timers</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,7 +11,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f0f0f0;
+            background-color: #36454F;
             margin: 0;
             flex-direction: column;
         }
@@ -21,20 +21,20 @@
             margin-bottom: 20px;
         }
         .timer {
-            font-size: 48px;
-            color: #333;
+            font-size: 36px;
+            color: #ffffff;
             margin-right: 20px;
         }
         .label {
-            font-size: 24px;
-            color: #555;
+            font-size: 18px;
+            color: #ffffff;
             margin-right: 20px;
         }
         button {
-            padding: 10px 20px;
+            padding: 10px 10px;
             font-size: 16px;
             cursor: pointer;
-            background-color: #007BFF;
+            background-color: #B2BEB5;
             color: white;
             border: none;
             border-radius: 5px;
@@ -48,37 +48,37 @@
 
     <!-- Timer for Vitro (28 minutes) -->
     <div class="timer-container">
-        <div class="label">Vitro</div>
+        <div class="label">In Vitro</div>
         <div id="timer-vitro" class="timer">28:00</div>
-        <button onclick="resetTimer('vitro', 1680)">Reset Timer</button>
+        <button onclick="resetTimer('vitro', 1680)">Reset</button>
     </div>
 
     <!-- Timer for Opera (21 minutes) -->
     <div class="timer-container">
         <div class="label">Opera</div>
         <div id="timer-opera" class="timer">21:00</div>
-        <button onclick="resetTimer('opera', 1260)">Reset Timer</button>
+        <button onclick="resetTimer('opera', 1260)">Reset</button>
     </div>
 
     <!-- Timer for Future (28 minutes) -->
     <div class="timer-container">
         <div class="label">Future</div>
         <div id="timer-future" class="timer">28:00</div>
-        <button onclick="resetTimer('future', 1680)">Reset Timer</button>
+        <button onclick="resetTimer('future', 1680)">Reset</button>
     </div>
 
     <!-- Timer for Estate (9 minutes) -->
     <div class="timer-container">
         <div class="label">Estate</div>
         <div id="timer-estate" class="timer">09:00</div>
-        <button onclick="resetTimer('estate', 540)">Reset Timer</button>
+        <button onclick="resetTimer('estate', 540)">Reset</button>
     </div>
 
     <!-- Timer for Space (5 minutes) -->
     <div class="timer-container">
         <div class="label">Space</div>
         <div id="timer-space" class="timer">05:00</div>
-        <button onclick="resetTimer('space', 300)">Reset Timer</button>
+        <button onclick="resetTimer('space', 300)">Reset</button>
     </div>
 
     <script>
